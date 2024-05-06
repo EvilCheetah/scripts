@@ -9,6 +9,9 @@ from const import IMAGE_EXTENSIONS
 
 
 def main(input_directory: Path, output_directory: Path) -> None:
+    if not input_directory:
+        raise Exception('Specify input directory')
+    
     if not output_directory.is_dir():
         output_directory.mkdir(parents = True, exist_ok = True)
     
@@ -31,9 +34,9 @@ if __name__ == '__main__':
         )
         
         parser.add_argument(
-            '--directory', '--dir', '-d',
-            help    = 'Directory Path',
-            default = Path('.')
+            '--input', '-i', '-d',
+            help    = 'Input Directory',
+            default = None
         )
         
         parser.add_argument(
