@@ -3,18 +3,25 @@
 
 import argparse
 from pathlib import Path
+from PIL import Image
 
 from const import IMAGE_EXTENSIONS
 
 
-def main(directory: Path = '.'):
-    images = [
+def main(input_directory: Path, output_directory: Path) -> None:
+    if not output_directory.is_dir():
+        output_directory.mkdir(parents = True, exist_ok = True)
+    
+    files = [
         image
         for extension in IMAGE_EXTENSIONS
-        for image     in directory.glob(f'*.{extension}')
+        for image     in input_directory.glob(f'*.{extension}')
     ]
     
-    print(images)
+    for file in files:
+        with Image.open(file) as image:
+            image.save( output_directory / f'{file.stem}.pdf' )
+            
 
 
 if __name__ == '__main__':
@@ -29,9 +36,18 @@ if __name__ == '__main__':
             default = Path('.')
         )
         
+        parser.add_argument(
+            '--output', '-o',
+            help    = 'Output Directory',
+            default = Path('output/')
+        )
+        
         args = parser.parse_args()
         
-        main(directory = Path(args.directory))
+        main(
+            input_directory  = Path(args.directory),
+            output_directory = Path(args.output)
+        )
 
     except KeyboardInterrupt:
         print('Terminated...')
