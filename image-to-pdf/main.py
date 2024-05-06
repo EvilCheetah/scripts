@@ -4,9 +4,17 @@
 import argparse
 from pathlib import Path
 
+from const import IMAGE_EXTENSIONS
 
-def main(directory = Path('.')):
-    print(f'Passed Directory: `{directory}`')
+
+def main(directory: Path = '.'):
+    images = [
+        image
+        for extension in IMAGE_EXTENSIONS
+        for image     in directory.glob(f'*.{extension}')
+    ]
+    
+    print(images)
 
 
 if __name__ == '__main__':
@@ -23,7 +31,7 @@ if __name__ == '__main__':
         
         args = parser.parse_args()
         
-        main(directory = args.directory)
+        main(directory = Path(args.directory))
 
     except KeyboardInterrupt:
         print('Terminated...')
