@@ -1,32 +1,40 @@
-from collections import defaultdict
-from decimal import Decimal
-from functools import reduce
+import argparse
 
-import pandas as pd
-import numpy as np
-
-from columns import COLUMNS
-
-
-TRIPS = defaultdict(lambda: Decimal(0))
+from functions import print_payments
 
 
 def main() -> None:
-    file = pd.ExcelFile('Week 28 - July 7 — July 13 - Contract.xlsx')
-    df   = pd.read_excel(file, sheet_name = 'Payment Details', names = COLUMNS)
-    df   = df.replace({ np.nan: None })
+    parser = argparse.ArgumentParser(
+        prog        = 'Relay Payments',
+        description = 'Prints the trips and their total compensation'
+    )
 
-    for row in df.itertuples(index = False, name = 'PaymentEntry'):
-        TRIPS[row.BlockID or row.TripID or row.LoadID] += Decimal(row.GrossPay or 0)
+    parser.add_argument(
+        '-f', '--file',
+        type = str,
+        help = 'Excel file to Process'
+    )
 
-    # Remove rows where the Summary column contains None (originally NaN) 
-    TRIPS.pop(None)
+    parser.add_argument(
+        '-t', '--type',
+        type    = str,
+        choices = ['contract', 'spot'],
+        help    = 'Type of the Excel report'
+    )
 
-    for trip_id, pay_amount in TRIPS.items():
-        print(f'Trip: {trip_id} - ${pay_amount:,.2f}')
+    args, unknown = parser.parse_known_args()
 
-    total = reduce(lambda a, b: a + b, TRIPS.values())
-    print(f'\tTotal: ${total:,.2f}')
+    if args.file:
+        file = args.file
+    elif unknown:
+        file, _ = unknown
+    else:
+        parser.error('Please, specify a file')
+
+    print_payments(file, args.type.title())
+    # print(f'File: {file}')
+    # print(f'Type: {args.type.title()}')
+
 
 
 if __name__ == '__main__':
