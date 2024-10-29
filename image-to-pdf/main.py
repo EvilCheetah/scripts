@@ -48,7 +48,7 @@ if __name__ == '__main__':
         args = parser.parse_args()
         
         main(
-            input_directory  = Path(args.directory),
+            input_directory  = Path(args.input),
             output_directory = Path(args.output)
         )
 
